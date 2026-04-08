@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load ui_components %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h4 mb-0">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i> Create Account
+                </h1>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" id="id_username" class="form-control" 
+                               required aria-required="true" placeholder="Choose a username"
+                               value="{{ form.username.value|default:'' }}">
+                        {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" name="email" id="id_email" class="form-control" 
+                               required aria-required="true" placeholder="Enter your email"
+                               value="{{ form.email.value|default:'' }}">
+                        {% if form.email.errors %}
+                        <div class="invalid-feedback d-block">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" 
+                               required aria-required="true" placeholder="Enter your password">
+                        {% if form.password1.errors %}
+                        <div class="invalid-feedback d-block">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                        <div class="form-text">
+                            <ul class="mb-0">
+                                <li>At least 8 characters</li>
+                                <li>Not too similar to your other personal information</li>
+                                <li>Not a commonly used password</li>
+                                <li>Not entirely numeric</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" 
+                               required aria-required="true" placeholder="Confirm your password">
+                        {% if form.password2.errors %}
+                        <div class="invalid-feedback d-block">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-user-plus" aria-hidden="true"></i> Register
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-0">
+                    Already have an account? 
+                    <a href="{% url 'accounts:login' %}">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

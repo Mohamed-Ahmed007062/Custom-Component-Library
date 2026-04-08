@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load ui_components %}
+
+{% block title %}Search: {{ query }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-4">
+            <i class="fas fa-search" aria-hidden="true"></i> Search Results
+        </h1>
+        
+        {% if query %}
+        <p class="lead mb-4">
+            Found {{ page_obj.paginator.count }} result{{ page_obj.paginator.count|pluralize }} for "{{ query }}"
+        </p>
+        
+        {% if page_obj %}
+        <div class="row">
+            {% for post in page_obj %}
+            <div class="col-md-6 mb-4">
+                <article class="card h-100" aria-labelledby="post-title-{{ post.id }}">
+                    {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" class="card-img-top post-image" 
+                         alt="{{ post.alt_text|default:post.title }}" loading="lazy">
+                    {% endif %}
+                    <div class="card-body">
+                        <h2 class="card-title h5" id="post-title-{{ post.id }}">
+                            <a href="{{ post.get_absolute_url }}" class="text-decoration-none text-dark">
+                                {{ post.title }}
+                            </a>
+                        </h2>
+                        {% if post.category %}
+                        <span class="badge bg-primary mb-2" aria-label="Category: {{ post.category.name }}">
+                            {{ post.category.name }}
+                        </span>
+                        {% endif %}
+                        <p class="card-text">{{ post.excerpt|default:post.content|truncatewords:30 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-user" aria-hidden="true"></i>
+                                <span aria-label="Author">{{ post.author.username }}</span>
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar" aria-hidden="true"></i>
+                                <time datetime="{{ post.published_at|date:'Y-m-d' }}" aria-label="Published date">
+                                    {{ post.published_at|date:"M d, Y" }}
+                                </time>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ post.get_absolute_url }}" class="btn btn-primary btn-sm" 
+                           aria-label="Read full post: {{ post.title }}">
+                            Read More <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% pagination page_obj %}
+        
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+            No posts found matching your search.
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle" aria-hidden="true"></i>
+            Enter a search term to find posts.
+        </div>
+        {% endif %}
+    </div>
+    
+    <aside class="col-lg-4" aria-label="Sidebar">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="h5 mb-0">
+                    <i class="fas fa-search" aria-hidden="true"></i> Search Again
+                </h3>
+            </div>
+            <div class="card-body">
+                <form action="{% url 'blog:search_posts' %}" method="get">
+                    <div class="mb-3">
+                        <label for="search-input" class="form-label">Search</label>
+                        <input type="search" name="q" id="search-input" class="form-control" 
+                               value="{{ query }}" placeholder="Search posts...">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search" aria-hidden="true"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

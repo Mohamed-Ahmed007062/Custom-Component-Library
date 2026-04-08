@@ -1,0 +1,39 @@
+{
+  "name": "django-blog-components",
+  "version": "1.0.0",
+  "description": "A collection of reusable, accessible UI components for Django applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"Build completed\"",
+    "lint": "echo \"Lint completed\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/django-blog-components.git"
+  },
+  "keywords": [
+    "django",
+    "components",
+    "ui",
+    "accessibility",
+    "aria",
+    "bootstrap",
+    "reusable"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yourusername/django-blog-components/issues"
+  },
+  "homepage": "https://github.com/yourusername/django-blog-components#readme",
+  "files": [
+    "templatetags/",
+    "static/",
+    "templates/",
+    "README.md"
+  ],
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

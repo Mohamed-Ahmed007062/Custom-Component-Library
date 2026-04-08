@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load ui_components %}
+
+{% block title %}{{ post.title }}{% endblock %}
+{% block description %}{{ post.excerpt|default:post.content|truncatewords:20 }}{% endblock %}
+
+{% block content %}
+<article aria-labelledby="post-title">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            {% breadcrumb items %}
+            
+            <!-- Post header -->
+            <header class="mb-4">
+                <h1 id="post-title" class="mb-3">{{ post.title }}</h1>
+                
+                <div class="d-flex flex-wrap gap-3 mb-3">
+                    <span class="text-muted">
+                        <i class="fas fa-user" aria-hidden="true"></i>
+                        <span aria-label="Author">{{ post.author.username }}</span>
+                    </span>
+                    <span class="text-muted">
+                        <i class="fas fa-calendar" aria-hidden="true"></i>
+                        <time datetime="{{ post.published_at|date:'Y-m-d' }}" aria-label="Published date">
+                            {{ post.published_at|date:"F d, Y" }}
+                        </time>
+                    </span>
+                    {% if post.category %}
+                    <span class="badge bg-primary" aria-label="Category: {{ post.category.name }}">
+                        <i class="fas fa-folder" aria-hidden="true"></i>
+                        {{ post.category.name }}
+                    </span>
+                    {% endif %}
+                </div>
+                
+                {% if post.author == user %}
+                <div class="btn-group mb-3" role="group" aria-label="Post actions">
+                    <a href="{% url 'blog:edit_post' post.slug %}" class="btn btn-outline-primary btn-sm"
+                       aria-label="Edit post">
+                        <i class="fas fa-edit" aria-hidden="true"></i> Edit
+                    </a>
+                    <a href="{% url 'blog:delete_post' post.slug %}" class="btn btn-outline-danger btn-sm"
+                       aria-label="Delete post">
+                        <i class="fas fa-trash" aria-hidden="true"></i> Delete
+                    </a>
+                </div>
+                {% endif %}
+            </header>
+            
+            <!-- Featured image -->
+            {% if post.featured_image %}
+            <figure class="mb-4">
+                <img src="{{ post.featured_image.url }}" class="img-fluid rounded" 
+                     alt="{{ post.alt_text|default:post.title }}" loading="lazy">
+                {% if post.alt_text %}
+                <figcaption class="text-muted mt-2">{{ post.alt_text }}</figcaption>
+                {% endif %}
+            </figure>
+            {% endif %}
+            
+            <!-- Post content -->
+            <div class="post-content mb-4">
+                {{ post.content|linebreaks }}
+            </div>
+            
+            <!-- Comments section -->
+            <section aria-labelledby="comments-heading" class="mt-5">
+                <h2 id="comments-heading" class="h4 mb-4">
+                    <i class="fas fa-comments" aria-hidden="true"></i>
+                    Comments ({{ comments|length }})
+                </h2>
+                
+                {% if user.is_authenticated %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="h5 mb-0">Add a Comment</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{{ post.get_absolute_url }}" novalidate>
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_content" class="form-label">Your Comment</label>
+                                <textarea name="content" id="id_content" class="form-control" 
+                                          rows="4" required aria-required="true"
+                                          placeholder="Write your comment here..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane" aria-hidden="true"></i> Submit Comment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i>
+                    Please <a href="{% url 'accounts:login' %}">log in</a> to leave a comment.
+                </div>
+                {% endif %}
+                
+                <!-- Comments list -->
+                {% if comments %}
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment card mb-3" id="comment-{{ comment.pk }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong>{{ comment.author.username }}</strong>
+                                    <small class="text-muted ms-2">
+                                        <time datetime="{{ comment.created_at|date:'Y-m-d H:i' }}">
+                                            {{ comment.created_at|timesince }} ago
+                                        </time>
+                                    </small>
+                                </div>
+                            </div>
+                            <p class="mb-0">{{ comment.content|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No comments yet. Be the first to comment!</p>
+                {% endif %}
+            </section>
+        </div>
+        
+        <aside class="col-lg-4" aria-label="Post sidebar">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-info-circle" aria-hidden="true"></i> Post Info
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <dl class="mb-0">
+                        <dt>Author</dt>
+                        <dd>{{ post.author.username }}</dd>
+                        
+                        <dt>Published</dt>
+                        <dd>{{ post.published_at|date:"F d, Y" }}</dd>
+                        
+                        {% if post.category %}
+                        <dt>Category</dt>
+                        <dd>
+                            <a href="{{ post.category.get_absolute_url }}">
+                                {{ post.category.name }}
+                            </a>
+                        </dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">
+                        <i class="fas fa-share-alt" aria-hidden="true"></i> Share
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm" aria-label="Share on Twitter"
+                                onclick="shareTwitter()">
+                            <i class="fab fa-twitter" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" aria-label="Share on Facebook"
+                                onclick="shareFacebook()">
+                            <i class="fab fa-facebook" aria-hidden="true"></i>
+                        </button>
+                        <button class="btn btn-outline-primary btn-sm" aria-label="Share on LinkedIn"
+                                onclick="shareLinkedIn()">
+                            <i class="fab fa-linkedin" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</article>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function shareTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('{{ post.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+}
+
+function shareFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+}
+
+function shareLinkedIn() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${url}`, '_blank');
+}
+</script>
+{% endblock %}

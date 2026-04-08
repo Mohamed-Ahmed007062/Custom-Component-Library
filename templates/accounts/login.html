@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load ui_components %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="h4 mb-0">
+                    <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
+                </h1>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <input type="text" name="username" id="id_username" class="form-control" 
+                               required aria-required="true" placeholder="Enter your username"
+                               value="{{ form.username.value|default:'' }}">
+                        {% if form.username.errors %}
+                        <div class="invalid-feedback d-block">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password" id="id_password" class="form-control" 
+                               required aria-required="true" placeholder="Enter your password">
+                        {% if form.password.errors %}
+                        <div class="invalid-feedback d-block">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ form.non_field_errors.0 }}
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
+                    </button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <p class="mb-2">
+                    <a href="{% url 'accounts:password_reset' %}">Forgot your password?</a>
+                </p>
+                <p class="mb-0">
+                    Don't have an account? 
+                    <a href="{% url 'accounts:register' %}">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load ui_components %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-4">
+            <i class="fas fa-edit" aria-hidden="true"></i> Edit Post
+        </h1>
+        
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">Title <span class="text-danger">*</span></label>
+                        <input type="text" name="title" id="id_title" class="form-control" 
+                               value="{{ form.title.value }}" required aria-required="true">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">Category</label>
+                        <select name="category" id="id_category" class="form-select">
+                            <option value="">Select a category</option>
+                            {% for category in form.category.field.queryset %}
+                            <option value="{{ category.pk }}" {% if form.category.value == category.pk %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_content" class="form-label">Content <span class="text-danger">*</span></label>
+                        <textarea name="content" id="id_content" class="form-control" 
+                                  rows="10" required aria-required="true">{{ form.content.value }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_excerpt" class="form-label">Excerpt</label>
+                        <textarea name="excerpt" id="id_excerpt" class="form-control" 
+                                  rows="3">{{ form.excerpt.value }}</textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_featured_image" class="form-label">Featured Image</label>
+                        {% if post.featured_image %}
+                        <div class="mb-2">
+                            <img src="{{ post.featured_image.url }}" alt="{{ post.alt_text }}" 
+                                 class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                        {% endif %}
+                        <input type="file" name="featured_image" id="id_featured_image" 
+                               class="form-control" accept="image/*">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_status" class="form-label">Status</label>
+                        <select name="status" id="id_status" class="form-select">
+                            <option value="draft" {% if form.status.value == 'draft' %}selected{% endif %}>Draft</option>
+                            <option value="published" {% if form.status.value == 'published' %}selected{% endif %}>Published</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_aria_label" class="form-label">ARIA Label</label>
+                        <input type="text" name="aria_label" id="id_aria_label" class="form-control" 
+                               value="{{ form.aria_label.value }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_alt_text" class="form-label">Image Alt Text</label>
+                        <input type="text" name="alt_text" id="id_alt_text" class="form-control" 
+                               value="{{ form.alt_text.value }}">
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save" aria-hidden="true"></i> Update Post
+                        </button>
+                        <a href="{{ post.get_absolute_url }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times" aria-hidden="true"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <aside class="col-lg-4" aria-label="Sidebar">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="h5 mb-0">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i> Post Info
+                </h3>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt>Created</dt>
+                    <dd>{{ post.created_at|date:"F d, Y" }}</dd>
+                    
+                    <dt>Last Updated</dt>
+                    <dd>{{ post.updated_at|date:"F d, Y" }}</dd>
+                    
+                    <dt>Author</dt>
+                    <dd>{{ post.author.username }}</dd>
+                </dl>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}
